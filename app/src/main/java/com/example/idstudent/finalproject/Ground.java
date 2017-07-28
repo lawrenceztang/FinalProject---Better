@@ -20,27 +20,6 @@ public class Ground {
         Shape() {
             paint = new Paint();
             paint.setColor(Color.rgb(125, 68, 30));
-
-
-
-      /*     int colorRand = rand.nextInt(5);
-             if(colorRand == 0) {
-                paint.setColor(Color.GREEN);
-            }
-            if(colorRand == 1) {
-                paint.setColor(Color.BLUE);
-            }
-            if(colorRand == 2) {
-                paint.setColor(Color.RED);
-            }
-            if(colorRand == 3) {
-                paint.setColor(Color.CYAN);
-            }
-            if(colorRand == 4) {
-                paint.setColor(Color.MAGENTA);
-            }
-*/
-
         }
 
         public void draw(Canvas canvas, Player player) {

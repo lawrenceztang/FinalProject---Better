@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.view.SurfaceHolder;
 
-
 public class GameThread extends Thread{
     public boolean running;
     GameView gameView;
