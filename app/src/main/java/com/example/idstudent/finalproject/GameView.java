@@ -112,7 +112,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         player.setRun(0);
         if(
                 downY - event.getY() > 100 &&
-                frames - aFrame      < 30  && 
+                frames - aFrame      < 30  &&
                 player.canJump       != 0
                 ) {
             player.jump();

@@ -2,7 +2,9 @@ package com.example.idstudent.finalproject;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 
 
 public class Player {
@@ -94,7 +96,9 @@ public class Player {
             }
             jumpingTicker++;
         }
-
+        Paint scoreColor = new Paint();
+        scoreColor.setColor(Color.BLUE);
+        canvas.drawText(Integer.toString(mapX), 20, 20, scoreColor);
         mapX = mapX - stopX;
         mapX = xSpeed + mapX;
         ticker++;
