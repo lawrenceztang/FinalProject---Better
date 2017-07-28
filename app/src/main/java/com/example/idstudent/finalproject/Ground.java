@@ -31,7 +31,7 @@ public class Ground {
                        (float) (canvas.getHeight()),
                        paint);
                Paint hi = new Paint();
-               hi.setColor(Color.GREEN);
+               hi.setColor(Color.rgb(1,166,17));
                canvas.drawRect((float) (x - player.mapX), (float) (shapeHeight), (float) (x + shapeWidth - player.mapX), (float) (shapeHeight + 50), hi);
            }
         }
