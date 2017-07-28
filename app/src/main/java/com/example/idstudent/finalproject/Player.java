@@ -98,10 +98,10 @@ public class Player {
             }
             jumpingTicker++;
         }
-        if(score>mapX){score = mapX;}
+        if(score<mapX){score = mapX;}
         Paint scoreColor = new Paint();
-        setTextSizeForWidth(scoreColor, 100, Integer.toString(score));
-        canvas.drawText(Integer.toString(score), 20, 50, scoreColor);
+        setTextSizeForWidth(scoreColor, 100, Integer.toString(score/300));
+        canvas.drawText(Integer.toString(score/300), 20, 200, scoreColor);
         mapX = mapX - stopX;
         mapX = xSpeed + mapX;
         ticker++;
