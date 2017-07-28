@@ -70,27 +70,55 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     @Override
     public boolean onTouchEvent(MotionEvent event) {
 
-        if (event.getAction() == MotionEvent.ACTION_DOWN) {
-            downY = event.getY();
-            aFrame = frames;
-            player.setRun(1);
-            if (event.getX() > getWidth() / 9 * 5) {
-                player.xSpeed = 10;
-            }
-            else if(event.getX() < getWidth() / 9 * 4){
-                player.xSpeed = -10;
-            }
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                touchDown(event);
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+                touchDown(event);
+                break;
+            case MotionEvent.ACTION_MOVE:
+                touchMove(event);
+                break;
+            case MotionEvent.ACTION_UP:
+                touchUp(event);
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+                touchUp(event);
+                break;
+            case MotionEvent.ACTION_CANCEL:
+                touchUp(event);
+                break;
+            default:
         }
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            player.setRun(0);
-            if(downY - event.getY() > 100 && frames - aFrame < 10 && player.canJump != 0) {
-                player.jump();
-                player.canJump = 0;
-            }
-            player.xSpeed = 0;
-        }
-
         return true;
+    }
+
+    void touchDown(MotionEvent event) {
+        downY = event.getY();
+        aFrame = frames;
+        player.setRun(1);
+        if (event.getX() > getWidth() / 9 * 5) {
+            player.xSpeed = 10;
+        }
+        else if(event.getX() < getWidth() / 9 * 4){
+            player.xSpeed = -10;
+        }
+    }
+    void touchMove(MotionEvent event) {
+
+    }
+    void touchUp(MotionEvent event) {
+        player.setRun(0);
+        if(
+                downY - event.getY() > 100 &&
+                frames - aFrame      < 30  && 
+                player.canJump       != 0
+                ) {
+            player.jump();
+            player.canJump = 0;
+        }
+        player.xSpeed = 0;
     }
 }
 
