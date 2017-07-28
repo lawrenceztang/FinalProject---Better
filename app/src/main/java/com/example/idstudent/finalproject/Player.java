@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
+import android.graphics.Rect;
 
 
 public class Player {
@@ -19,6 +20,7 @@ public class Player {
     public Bitmap flipRun;
     int y;
     int x;
+    int score;
     final int fallingSpeed = 20;
     int canvasHeight;
     Ground ground;
@@ -96,9 +98,10 @@ public class Player {
             }
             jumpingTicker++;
         }
+        if(score>mapX){score = mapX;}
         Paint scoreColor = new Paint();
-        scoreColor.setColor(Color.BLUE);
-        canvas.drawText(Integer.toString(mapX), 20, 20, scoreColor);
+        setTextSizeForWidth(scoreColor, 100, Integer.toString(score));
+        canvas.drawText(Integer.toString(score), 20, 50, scoreColor);
         mapX = mapX - stopX;
         mapX = xSpeed + mapX;
         ticker++;
@@ -124,6 +127,16 @@ public class Player {
         }
         return 0;
 
+    }
+
+    private static void setTextSizeForWidth(Paint paint, float desiredWidth,
+                                            String text) {
+        final float testTextSize = 48f;
+        paint.setTextSize(testTextSize);
+        Rect bounds = new Rect();
+        paint.getTextBounds(text, 0, text.length(), bounds);
+        float desiredTextSize = testTextSize * desiredWidth / bounds.width();
+        paint.setTextSize(desiredTextSize);
     }
 
 
