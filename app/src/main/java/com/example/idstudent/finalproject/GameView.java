@@ -51,6 +51,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         player = new Player(getWidth()/3, 0, getHeight(), getWidth(), ground);
         player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.run_burned),100,150);
         player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,150);
+        Bitmap temporary = BitmapFactory.decodeResource(getResources(),R.drawable.good_grass);
+        Ground.grassBitmap = Util.getResizedBitmap(temporary, temporary.getWidth()/10, temporary.getHeight()/10);
         ground = new Ground();
         ground.initializeDraw(getWidth(),getHeight());
         thread.running = true;

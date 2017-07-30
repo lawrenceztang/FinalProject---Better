@@ -1,6 +1,7 @@
 package com.example.idstudent.finalproject;
 
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -12,6 +13,8 @@ public class Ground {
 
     public class Shape {
         public int x;
+        int grassX;
+        public int grassNum;
         public int shapeHeight;
         public int shapeWidth;
         Random rand = new Random();
@@ -32,7 +35,14 @@ public class Ground {
                        paint);
                Paint hi = new Paint();
                hi.setColor(Color.rgb(1,166,17));
-               canvas.drawRect((float) (x - player.mapX), (float) (shapeHeight), (float) (x + shapeWidth - player.mapX), (float) (shapeHeight + 50), hi);
+               int width = grassBitmap.getWidth();
+               grassNum = shapeWidth / Ground.grassBitmap.getWidth();
+               grassX = x;
+               for(int i = 0; i < grassNum; i++) {
+                   canvas.drawBitmap(Ground.grassBitmap, grassX - player.mapX, shapeHeight - 70, null);
+                   grassX = grassX + Ground.grassBitmap.getWidth();
+               }
+               canvas.drawBitmap(Bitmap.createBitmap(Ground.grassBitmap, 0,0,shapeWidth - grassNum * Ground.grassBitmap.getWidth(), Ground.grassBitmap.getHeight()), grassX - player.mapX, shapeHeight - 70, null);
            }
         }
         public int checkCollisionX(Player player, Canvas canvas) {
@@ -70,6 +80,7 @@ public class Ground {
         }
     }
     public boolean fall;
+    static Bitmap grassBitmap;
     static int lastX;
     ArrayList<Shape> shapes;
     static int generatedDistance;
