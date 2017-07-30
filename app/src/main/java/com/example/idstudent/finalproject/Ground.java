@@ -58,7 +58,7 @@ public class Ground {
 
                 if(shapeHeight < player.y + player.getHeight() && shapeHeight > player.y + player.getWidth()/2) {
                     fall = false;
-                    player.ySpeed = 0;
+
                     return shapeHeight- player.getHeight() + 10;
 
                 }

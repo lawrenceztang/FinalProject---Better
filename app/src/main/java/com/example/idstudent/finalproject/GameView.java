@@ -49,8 +49,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     public void surfaceCreated(SurfaceHolder holder) {
         rand = new Random();
         player = new Player(getWidth()/3, 0, getHeight(), getWidth(), ground);
-        player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.run_burned),100,100);
-        player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,100);
+        player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.run_burned),100,150);
+        player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,150);
         ground = new Ground();
         ground.initializeDraw(getWidth(),getHeight());
         thread.running = true;
@@ -75,7 +75,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             ground.generateTerrain(getWidth(), getHeight(), player);
         }
         randomDraw = rand.nextInt(1000);
-        if(randomDraw > 995) {
+        if(randomDraw > 997) {
             cloudList.add(new Cloud(Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.cloud1),rand.nextInt(300) + 300,rand.nextInt(100) + 100)));
 
         }

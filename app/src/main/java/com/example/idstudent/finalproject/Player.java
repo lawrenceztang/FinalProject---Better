@@ -25,8 +25,7 @@ public class Player {
     int canvasHeight;
     Ground ground;
     int canvasWidth;
-    int jumpingAcceleration = -4;
-    int fallingAcceleration = 2;
+    int fallingAcceleration = 1;
     boolean jumping;
     int canJump;
     int jumpingTicker;
@@ -43,7 +42,6 @@ public class Player {
     public void jump() {
         if (canJump > 0) {
             jumping = true;
-            ySpeed = 0;
             jumpingTicker = 0;
         }
     }
@@ -79,22 +77,23 @@ public class Player {
         int stopY = ground.checkCollisionY(this, canvas);
         if(stopY > 0) {
             this.y = stopY;
+            ySpeed = 0;
         }
         else if(stopY == 0){
             if(ground.fall) {
                 this.ySpeed = this.ySpeed + fallingAcceleration;
-                this.y = this.y + this.getYSpeed();
+
             }
 
         }
         if(jumping) {
+            if(jumpingTicker == 0) {
+                ySpeed = -20;
+            }
             if(jumpingTicker > 5) {
                 jumping = false;
-                ySpeed = 0;
             }
             else {
-                ySpeed = -20;
-                this.y = this.y + ySpeed;
             }
             jumpingTicker++;
         }
@@ -105,6 +104,7 @@ public class Player {
         mapX = mapX - stopX;
         mapX = xSpeed + mapX;
         ticker++;
+        this.y = this.y + this.getYSpeed();
     }
 
     public int getWidth() {
