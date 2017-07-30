@@ -11,14 +11,20 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+import java.util.Random;
+
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     GameThread thread;
     Player player;
+    Random rand;
     Ground ground;
+    int randomDraw;
     long aFrame;
     float downY;
     long frames;
+    ArrayList<Cloud> cloudList;
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -41,21 +47,25 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-
+        rand = new Random();
         player = new Player(getWidth()/3, 0, getHeight(), getWidth(), ground);
         player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.run_burned),100,100);
         player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,100);
-
         ground = new Ground();
         ground.initializeDraw(getWidth(),getHeight());
         thread.running = true;
         thread.start();
+        cloudList = new ArrayList<Cloud>();
 
     }
     @Override
     protected void onDraw(Canvas canvas) {
+        int times = 0;
         frames++;
         canvas.drawColor(Color.rgb(155, 227, 255));
+        for(int i = 0; i < cloudList.size(); i++) {
+            cloudList.get(i).draw(canvas);
+        }
         ground.draw(canvas, player);
 
         this.buildDrawingCache();
@@ -64,7 +74,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         if(player.mapX+1000>ground.generatedDistance) {
             ground.generateTerrain(getWidth(), getHeight(), player);
         }
-        //move stuff
+        randomDraw = rand.nextInt(1000);
+        if(randomDraw > 995) {
+            cloudList.add(new Cloud(Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.cloud1),rand.nextInt(300) + 300,rand.nextInt(100) + 100)));
+
+        }
+
+        if(times<1) {
+            Cloud.canvas = canvas;
+        }
+        times++;
+
     }
 
     @Override
@@ -120,5 +140,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         }
         player.xSpeed = 0;
     }
+
 }
 
