@@ -11,6 +11,10 @@ import java.util.Random;
 
 public class Ground {
 
+    public class Hole {
+
+    }
+
     public class Shape {
         public int x;
         int grassX;
@@ -39,10 +43,10 @@ public class Ground {
                grassNum = shapeWidth / Ground.grassBitmap.getWidth();
                grassX = x;
                for(int i = 0; i < grassNum; i++) {
-                   canvas.drawBitmap(Ground.grassBitmap, grassX - player.mapX, shapeHeight - 70, null);
+                   canvas.drawBitmap(Ground.grassBitmap, grassX - player.mapX, shapeHeight - grassBitmap.getHeight()/2, null);
                    grassX = grassX + Ground.grassBitmap.getWidth();
                }
-               canvas.drawBitmap(Bitmap.createBitmap(Ground.grassBitmap, 0,0,shapeWidth - grassNum * Ground.grassBitmap.getWidth(), Ground.grassBitmap.getHeight()), grassX - player.mapX, shapeHeight - 70, null);
+               canvas.drawBitmap(Bitmap.createBitmap(Ground.grassBitmap, 0,0,shapeWidth - grassNum * Ground.grassBitmap.getWidth(), Ground.grassBitmap.getHeight()), grassX - player.mapX, shapeHeight - grassBitmap.getHeight()/2, null);
            }
         }
         public int checkCollisionX(Player player, Canvas canvas) {

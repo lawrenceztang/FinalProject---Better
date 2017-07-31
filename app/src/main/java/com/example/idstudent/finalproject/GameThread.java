@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.media.MediaPlayer;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread{
@@ -14,6 +15,7 @@ public class GameThread extends Thread{
         super();
         this.surfaceHolder = surfaceHolder;
         this.gameView = gameView;
+
     }
     @Override
     @SuppressLint("WrongCall")

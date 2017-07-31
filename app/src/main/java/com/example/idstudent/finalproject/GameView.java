@@ -5,17 +5,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaPlayer;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
-
+    MediaPlayer mp;
     GameThread thread;
     Player player;
     Random rand;
@@ -31,7 +30,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         setFocusable(true);
         setDrawingCacheEnabled(true);
         thread = new GameThread(getHolder(), this);
-
+         mp = MediaPlayer.create(context, R.raw.theme);
+        mp.start();
 
     }
 
