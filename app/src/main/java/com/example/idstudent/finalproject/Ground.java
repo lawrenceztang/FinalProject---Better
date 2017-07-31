@@ -107,8 +107,16 @@ public class Ground {
         for (int i = 0; i < n; i++) {
             Shape shape = new Shape();
             shape.x = lastX;
-            shape.shapeHeight = height - rand.nextInt(height / 2) - 100;
-            shape.shapeWidth =  rand.nextInt(500) + 200;
+            int random = rand.nextInt();
+            if (random == 0) {
+
+                shape.shapeHeight = 99999;
+                shape.shapeWidth = rand.nextInt(200) + 200;
+            }
+            else {
+                shape.shapeHeight = height - rand.nextInt(height / 2) - 100;
+                shape.shapeWidth = rand.nextInt(500) + 200;
+            }
             shapes.add(shape);
             lastX = shape.x+shape.shapeWidth;
         }
@@ -117,10 +125,16 @@ public class Ground {
         int n = 10;
         Shape shape = new Shape();
             shape.x = lastX;
+            int random = rand.nextInt(5);
+        if (random == 0) {
 
-
-            shape.shapeHeight =  height - rand.nextInt(height / 2) - 100;
-            shape.shapeWidth =  rand.nextInt(500) + 200;
+            shape.shapeHeight = 99999;
+            shape.shapeWidth = rand.nextInt(200) + 200;
+        }
+        else {
+            shape.shapeHeight = height - rand.nextInt(height / 2) - 100;
+            shape.shapeWidth = rand.nextInt(500) + 200;
+        }
             shapes.add(shape);
             lastX = shape.x+shape.shapeWidth;
 

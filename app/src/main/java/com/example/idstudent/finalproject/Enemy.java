@@ -5,4 +5,7 @@ public class Enemy {
     int y;
     int x;
     int z;
+    public Enemy() {
+
+    }
 }

@@ -7,6 +7,8 @@ import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 
+import java.util.ArrayList;
+
 
 public class Player {
 
@@ -29,6 +31,7 @@ public class Player {
     boolean jumping;
     int canJump;
     int jumpingTicker;
+    ArrayList<Integer> checkPoints;
     public Player(int x, int y, int canvasHeight, int canvasWidth, Ground ground) {
         this.x = x;
         this.y = y;
@@ -36,7 +39,14 @@ public class Player {
         this.canvasWidth=canvasWidth;
         mapX = 0;
         ground = ground;
+        int addCheckpoints = 0;
+        int numToAdd = 0;
+        for(int i = 0; i < 100; i++) {
 
+            checkPoints.add(addCheckpoints);
+                    numToAdd += 100;
+                    addCheckpoints += numToAdd;
+        }
     }
 
     public void jump() {
@@ -105,6 +115,9 @@ public class Player {
         mapX = xSpeed + mapX;
         ticker++;
         this.y = this.y + this.getYSpeed();
+        if(this.y > canvas.getHeight()) {
+
+        }
     }
 
     public int getWidth() {
