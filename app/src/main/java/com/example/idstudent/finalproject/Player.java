@@ -32,6 +32,11 @@ public class Player {
     int canJump;
     int jumpingTicker;
     ArrayList<Integer> checkPoints;
+    int currentCheckPoint;
+    int swimming;
+    int swimmingTick;
+
+
     public Player(int x, int y, int canvasHeight, int canvasWidth, Ground ground) {
         this.x = x;
         this.y = y;
@@ -39,12 +44,13 @@ public class Player {
         this.canvasWidth=canvasWidth;
         mapX = 0;
         ground = ground;
+        checkPoints = new ArrayList<Integer>();
         int addCheckpoints = 0;
         int numToAdd = 0;
         for(int i = 0; i < 100; i++) {
 
             checkPoints.add(addCheckpoints);
-                    numToAdd += 100;
+                    numToAdd += 1000;
                     addCheckpoints += numToAdd;
         }
     }
@@ -55,28 +61,38 @@ public class Player {
             jumpingTicker = 0;
         }
     }
+    public void swimUp() {
+
+        swimming = 1;
+        swimmingTick = 0;
+    }
 
     public void draw(Canvas canvas, Ground ground) {
         Matrix m = new Matrix();
-        if(running == 1) {
-            if (ticker % 10 > 5) {
-                if(xSpeed < 0) {
-                    m.postScale(-1, 1,runBitmap.getWidth() / 2 , runBitmap.getHeight());
-                    m.postTranslate(x,y);
+        if(running != 0) {
+            if(ground.oceanTrue == 1 &&  y + getHeight() > ground.oceanArray.get(0).seaLevel) {
+
+            }
+            else {
+                if (ticker % 10 > 5) {
+                    if (xSpeed < 0) {
+                        m.postScale(-1, 1, runBitmap.getWidth() / 2, runBitmap.getHeight());
+                        m.postTranslate(x, y);
+                    } else {
+                        m.postScale(1, 1, runBitmap.getWidth() / 2, runBitmap.getHeight());
+                        m.postTranslate(x, y);
+                    }
+                    canvas.drawBitmap(runBitmap, m, null);
                 } else {
-                    m.postScale(1, 1,runBitmap.getWidth() / 2 , runBitmap.getHeight());
-                    m.postTranslate(x,y);
+                    if (xSpeed < 0) {
+                        m.postScale(-1, 1, standBitmap.getWidth() / 2, standBitmap.getHeight());
+                        m.postTranslate(x, y);
+                    } else {
+                        m.postScale(1, 1, standBitmap.getWidth() / 2, standBitmap.getHeight());
+                        m.postTranslate(x, y);
+                    }
+                    canvas.drawBitmap(standBitmap, m, null);
                 }
-                canvas.drawBitmap(runBitmap, m, null);
-            } else {
-                if(xSpeed < 0) {
-                    m.postScale(-1, 1,standBitmap.getWidth() / 2 , standBitmap.getHeight());
-                    m.postTranslate(x,y);
-                } else {
-                    m.postScale(1, 1,standBitmap.getWidth() / 2 , standBitmap.getHeight());
-                    m.postTranslate(x,y);
-                }
-                canvas.drawBitmap(standBitmap, m, null);
             }
         }
         else {
@@ -116,8 +132,24 @@ public class Player {
         ticker++;
         this.y = this.y + this.getYSpeed();
         if(this.y > canvas.getHeight()) {
-
+        this.mapX = currentCheckPoint;
+            this.y = 0;
         }
+        for(int i = 0; i < checkPoints.size(); i++) {
+            if(this.mapX > checkPoints.get(i) && this.mapX > currentCheckPoint) {
+                currentCheckPoint = checkPoints.get(i);
+            }
+        }
+        if(swimming == 1) {
+            if(swimmingTick > 10) {
+                swimming = 0;
+            }
+            else {
+                this.y -= 5;
+                swimmingTick++;
+            }
+        }
+
     }
 
     public int getWidth() {
@@ -128,7 +160,8 @@ public class Player {
         return standBitmap.getHeight();
     }
 
-    public void setRun(int i) { running = i; }
+    public void setRun(int i) { running = i;
+    xSpeed = running;}
 
     public int getYSpeed() {if(ySpeed > -50 && ySpeed < 50) {return ySpeed;}
     if(ySpeed > 50) {

@@ -9,6 +9,8 @@ import android.graphics.Paint;
 import java.util.ArrayList;
 import java.util.Random;
 
+import static android.R.attr.type;
+
 public class Ground {
 
     public class Hole {
@@ -23,6 +25,7 @@ public class Ground {
         public int shapeWidth;
         Random rand = new Random();
         Paint paint;
+
         int shapeType = rand.nextInt(3);
         Shape() {
             paint = new Paint();
@@ -38,16 +41,17 @@ public class Ground {
                        (float) (canvas.getHeight()),
                        paint);
                Paint hi = new Paint();
-               hi.setColor(Color.rgb(1,166,17));
+               hi.setColor(Color.rgb(1, 166, 17));
                int width = grassBitmap.getWidth();
                grassNum = shapeWidth / Ground.grassBitmap.getWidth();
                grassX = x;
-               for(int i = 0; i < grassNum; i++) {
-                   canvas.drawBitmap(Ground.grassBitmap, grassX - player.mapX, shapeHeight - grassBitmap.getHeight()/2, null);
+               for (int i = 0; i < grassNum; i++) {
+                   canvas.drawBitmap(Ground.grassBitmap, grassX - player.mapX, shapeHeight - grassBitmap.getHeight() / 2, null);
                    grassX = grassX + Ground.grassBitmap.getWidth();
                }
-               canvas.drawBitmap(Bitmap.createBitmap(Ground.grassBitmap, 0,0,shapeWidth - grassNum * Ground.grassBitmap.getWidth(), Ground.grassBitmap.getHeight()), grassX - player.mapX, shapeHeight - grassBitmap.getHeight()/2, null);
+               canvas.drawBitmap(Bitmap.createBitmap(Ground.grassBitmap, 0, 0, shapeWidth - grassNum * Ground.grassBitmap.getWidth(), Ground.grassBitmap.getHeight()), grassX - player.mapX, shapeHeight - grassBitmap.getHeight() / 2, null);
            }
+
         }
         public int checkCollisionX(Player player, Canvas canvas) {
             if (
@@ -83,14 +87,18 @@ public class Ground {
             return 0;
         }
     }
+    int biome = 1;
     public boolean fall;
     static Bitmap grassBitmap;
     static int lastX;
     ArrayList<Shape> shapes;
+    ArrayList<OceanChunk> oceanArray;
     static int generatedDistance;
     Random rand = new Random();
+    int oceanTrue;
     public Ground() {
         shapes =  new ArrayList<Shape>();
+        oceanArray = new ArrayList<OceanChunk>();
     }
 
     public void draw(Canvas canvas, Player player){
@@ -98,7 +106,11 @@ public class Ground {
         for (Shape shape : shapes) {
             shape.draw(canvas, player);
         }
-
+        for (OceanChunk ocean : oceanArray) {
+            ocean.draw(canvas, player.mapX);
+        }
+        Paint paint = new Paint();
+        paint.setColor(Color.RED);
     }
 
 
@@ -121,24 +133,35 @@ public class Ground {
             lastX = shape.x+shape.shapeWidth;
         }
     }
-    public void generateTerrain(int width, int height, Player player) {
-        int n = 10;
-        Shape shape = new Shape();
+    public void generateTerrain(int width, int height, Player player, Canvas canvas) {
+        if (biome == 1) {
+            int n = 10;
+            Shape shape = new Shape();
             shape.x = lastX;
             int random = rand.nextInt(5);
-        if (random == 0) {
+            if (random == 0 && shapes.get(shapes.size() - 1).shapeHeight < 99998) {
 
-            shape.shapeHeight = 99999;
-            shape.shapeWidth = rand.nextInt(200) + 200;
-        }
-        else {
-            shape.shapeHeight = height - rand.nextInt(height / 2) - 100;
-            shape.shapeWidth = rand.nextInt(500) + 200;
-        }
+                shape.shapeHeight = 99999;
+                shape.shapeWidth = rand.nextInt(200) + 200;
+            } else {
+                shape.shapeHeight = height - rand.nextInt(height / 2) - 100;
+                shape.shapeWidth = rand.nextInt(500) + 200;
+            }
             shapes.add(shape);
-            lastX = shape.x+shape.shapeWidth;
-
+            lastX = shape.x + shape.shapeWidth;
+            generatedDistance = shape.x;
+            if (rand.nextInt(10) == 1) {
+                biome = 2;
+            }
+        }
+        else if (biome == 2) {
+            OceanChunk ocean = new OceanChunk(lastX, rand.nextInt(5000) + 2000, canvas);
+            oceanArray.add(ocean);
+            biome = 1;
+            lastX = ocean.width + lastX;
+        }
     }
+
 
 
     public int checkCollisionX(Player player, Canvas canvas) {
@@ -154,34 +177,118 @@ public class Ground {
         return result;
     }
     public int checkCollisionY(Player player, Canvas canvas) {
-
-        // y check
+         oceanTrue = 0;
         int result = 0;
-        //for(Shape shape : shapes) {
-        if(player.xSpeed>= 0) {
-            for (int i = shapes.size() - 1; i >= 0; i--) {
-                result = shapes.get(i).checkCollisionY(player, canvas);
-                if (result > 0) {
-                    player.canJump = 1;
-                    return result;
 
-                }
-                else {
-
-                }
+        for(int d = 0; d < oceanArray.size(); d++) {
+            if(player.x > oceanArray.get(d).lastX - player.mapX && player.x < oceanArray.get(d).lastX + oceanArray.get(d).width - player.mapX) {
+                oceanTrue = 1;
             }
         }
-        else {
-            for (int i = 0; i < shapes.size(); i++) {
-                result = shapes.get(i).checkCollisionY(player, canvas);
-                if (result != 0) {
 
-                    return result;
+if(oceanTrue == 0) {
+    if (player.xSpeed >= 0) {
+        for (int i = shapes.size() - 1; i >= 0; i--) {
+            result = shapes.get(i).checkCollisionY(player, canvas);
+            if (result > 0) {
+                player.canJump = 1;
+                return result;
 
-                }
+            } else {
+
             }
         }
-        return result;
+    } else {
+        for (int i = 0; i < shapes.size(); i++) {
+            result = shapes.get(i).checkCollisionY(player, canvas);
+            if (result != 0) {
+
+                return result;
+
+            }
+        }
+    }
+    return result;
+}
+else {
+    result = player.y + 1;
+}
+return  result;
+    }
+
+    public class OceanChunk {
+    int lastX;
+        int width;
+        int wavePreviousHeight;
+        boolean goUp = true;
+        int[] wavePoints;
+        int seaLevel;
+        int maximumRise;
+
+        public OceanChunk(int lastX, int width, Canvas canvas) {
+
+        this.lastX = lastX;
+            this.width = width;
+            wavePoints = new int[width];
+            maximumRise = canvas.getHeight() / 100;
+            seaLevel = canvas.getHeight() / 4;
+            int slope = -1;
+            int waveLength = rand.nextInt(canvas.getWidth() / 100 + 50);
+            int counter = 0;
+            int waveLengthCounter = 0;
+            for(int i = 0; i < width; i++) {
+                try {
+                    if (goUp == true && wavePoints[i - 1] > seaLevel - maximumRise) {
+                    if(waveLength / 3 == waveLengthCounter) {
+                        slope--;
+                    }
+                    if(waveLength / 3 * 2 == waveLengthCounter) {
+                        slope++;
+                    }
+                    }
+
+
+                    if (goUp == false && wavePoints[i - 1] < seaLevel + maximumRise) {
+                        if(waveLength / 3 == waveLengthCounter) {
+                            slope++;
+                        }
+                        if(waveLength / 3 * 2 == waveLengthCounter) {
+                            slope--;
+                        }
+                    }
+                    wavePoints[i] = slope+wavePoints[i - 1];
+                }
+                catch(ArrayIndexOutOfBoundsException e) {
+                    wavePoints[0] = seaLevel;
+                }
+
+                if(waveLengthCounter >= waveLength  || wavePoints[i] <= seaLevel - maximumRise || wavePoints[i] >= seaLevel + maximumRise) {
+                    waveLengthCounter = 0;
+                    waveLength = rand.nextInt(canvas.getWidth() / 50);
+                    goUp = !goUp;
+                    if(goUp == true) { slope = -1; }
+                    else { slope = 1; }
+
+                }
+               waveLengthCounter++;
+                counter++;
+            }
+    }
+
+    public void draw(Canvas canvas, int playerX) {
+       Paint paint = new Paint();
+        paint.setColor(Color.WHITE);
+        Paint paint2 = new Paint();
+        paint2.setColor(Color.rgb(179, 230, 255));
+        for(int i = 0; i < width; i++) {
+            if(i + lastX - playerX < canvas.getWidth() && i + lastX - playerX > 0) {
+                canvas.drawCircle(i + lastX - playerX, wavePoints[i], 1, paint);
+                canvas.drawLine(i + lastX - playerX, wavePoints[i] + 1, i + lastX - playerX, canvas.getHeight(), paint2);
+            }
+        }
+    }
+
+
     }
 }
 

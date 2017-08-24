@@ -8,7 +8,7 @@ import android.media.MediaPlayer;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread{
-    public boolean running;
+    public boolean running = true;
     GameView gameView;
     SurfaceHolder surfaceHolder;
     public GameThread(SurfaceHolder surfaceHolder, GameView gameView) {
@@ -41,5 +41,6 @@ public class GameThread extends Thread{
             }
         }
     }
+
 }
 
