@@ -14,6 +14,7 @@ public class Player {
 
     public Bitmap runBitmap;
     public Bitmap standBitmap;
+    public Bitmap checkBitmap;
     int ticker;
     int xSpeed;
     int ySpeed;
@@ -71,6 +72,26 @@ public class Player {
         Matrix m = new Matrix();
         if(running != 0) {
             if(ground.oceanTrue == 1 &&  y + getHeight() > ground.oceanArray.get(0).seaLevel) {
+                if (ticker % 10 > 5) {
+                    if (xSpeed < 0) {
+                        m.postScale(-1, 1, runBitmap.getWidth() / 2, runBitmap.getHeight());
+                        m.postTranslate(x, y);
+                        canvas.drawBitmap(Util.rotateBitmap(standBitmap, 70), m, null);
+                    }
+                    else {
+                        canvas.drawBitmap(Util.rotateBitmap(runBitmap, 70), x, y, null);
+                    }
+                }
+                else {
+                    if (xSpeed < 0) {
+                        m.postScale(-1, 1, standBitmap.getWidth() / 2, standBitmap.getHeight());
+                        m.postTranslate(x, y);
+                        canvas.drawBitmap(Util.rotateBitmap(standBitmap, 70), m, null);
+                    }
+                    else {
+                        canvas.drawBitmap(Util.rotateBitmap(standBitmap, 70), x, y, null);
+                    }
+                }
 
             }
             else {
@@ -149,6 +170,15 @@ public class Player {
                 swimmingTick++;
             }
         }
+        for(int u = 0; u < checkPoints.size(); u++) {
+            for(int o = 0; o < ground.shapes.size(); o++) {
+                if (ground.shapes.get(o).x < checkPoints.get(u) && ground.shapes.get(o).x + ground.shapes.get(o).shapeWidth > checkPoints.get(u)) {
+                    if(ground.shapes.get(o).shapeHeight > 5000) {
+                        checkPoints.set(u, ground.shapes.get(o).shapeHeight + ground.shapes.get(o).x);
+                    }
+                }
+            }
+        }
 
     }
 
@@ -185,6 +215,12 @@ public class Player {
         paint.setTextSize(desiredTextSize);
     }
 
-
+    public void drawCheckpoint(Canvas canvas) {
+        for(int i = 0; i < checkPoints.size(); i++) {
+            if(checkPoints.get(i) + checkBitmap.getWidth() - mapX > 0 && checkPoints.get(i) - mapX < canvasWidth) {
+                canvas.drawBitmap(checkBitmap, checkPoints.get(i) - mapX, 100, new Paint());
+            }
+        }
+    }
 
 }

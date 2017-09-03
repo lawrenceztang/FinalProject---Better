@@ -47,7 +47,13 @@ public class Util {
         canvas.drawPath(path, paint);
     }
 
-    public static boolean detectHitbox(Point a, Point b, Point c, Point mouse) {
+    public static Bitmap rotateBitmap(Bitmap source, float angle) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(angle);
+        return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+    }
+
+    public static boolean detectHitbox(Point a, Point b, Point c, Point mouse) { //// FIXME: 8/28/2017
        int slope1 = (a.y - b.y)/(a.x - b.x);
         int slope2 = (b.y - c.y)/(b.x - c.x);
         int slope3 = (c.y - a.y)/(c.x - a.x);

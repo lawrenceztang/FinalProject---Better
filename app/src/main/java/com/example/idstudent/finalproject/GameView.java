@@ -35,6 +35,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     Point point1;
     Point point2;
     Point point3;
+    int height;
+    int width;
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -64,11 +66,17 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,150);
         Bitmap temporary = BitmapFactory.decodeResource(getResources(),R.drawable.good_grass);
         Ground.grassBitmap = Util.getResizedBitmap(temporary, temporary.getWidth()/10, temporary.getHeight()/10);
+        player.checkBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.midflag), 100, 100);
         ground = new Ground();
         ground.initializeDraw(getWidth(),getHeight());
         thread.running = true;
         thread.start();
         cloudList = new ArrayList<Cloud>();
+        point1 = new Point();
+        point2 = new Point();
+        point3 = new Point();
+        height = getHeight();
+        width = getWidth();
 
     }
     @Override
@@ -87,7 +95,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         this.buildDrawingCache();
 
         player.draw(canvas, ground);
-        if(player.mapX+10000>ground.generatedDistance) {
+        if(player.mapX+10000 > ground.generatedDistance) {
             ground.generateTerrain(getWidth(), getHeight(), player, canvas);
         }
         randomDraw = rand.nextInt(1000);
@@ -105,6 +113,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
      if(pause == 1) {
          Util.drawTriangle(canvas.getWidth() / 3, canvas.getHeight() / 1000 * 115, canvas.getWidth() / 3 * 2, canvas.getHeight() / 2, canvas.getWidth() / 3, canvas.getHeight() / 1000 * 885, canvas);
          }
+
+         player.drawCheckpoint(canvas);
      }
 
     @Override
@@ -180,9 +190,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
 public void stop() {
     thread.running = false;
-    point1 = new Point(canvas.getWidth()/3, canvas.getHeight()/1000*115);
-    point2 = new Point(canvas.getWidth()/3*2, canvas.getHeight()/2);
-    point3 = new Point(canvas.getWidth()/3, canvas.getHeight()/1000*885);
+
+    point1.set(width/3, height/1000*115);
+    point2.set(width/3*2, height/2);
+    point3.set(width/3-1, height/1000*885);
     Util.drawTriangle(point1.x, point1.y, point2.x, point2.y, point3.x, point3.y, canvas);
     pause = 1;
 }
