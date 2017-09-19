@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 public class GameView extends SurfaceView implements SurfaceHolder.Callback {
+    Context context;
     MediaPlayer mp;
     Canvas canvas;
     GameThread thread;
@@ -37,14 +38,15 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     Point point3;
     int height;
     int width;
+    boolean starting = true;
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
         setFocusable(true);
         setDrawingCacheEnabled(true);
         thread = new GameThread(getHolder(), this);
-         mp = MediaPlayer.create(context, R.raw.theme);
-        mp.start();
+        this.context = context;
+        ground = new Ground();
 
     }
 
@@ -59,89 +61,97 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) {
-        rand = new Random();
-        player = new Player(getWidth()/3, 0, getHeight(), getWidth(), ground);
-        player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.run_burned),100,150);
-        player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.stand ),100,150);
-        Bitmap temporary = BitmapFactory.decodeResource(getResources(),R.drawable.good_grass);
-        Ground.grassBitmap = Util.getResizedBitmap(temporary, temporary.getWidth()/10, temporary.getHeight()/10);
-        player.checkBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.midflag), 100, 100);
-        ground = new Ground();
-        ground.initializeDraw(getWidth(),getHeight());
-        thread.running = true;
-        thread.start();
-        cloudList = new ArrayList<Cloud>();
-        point1 = new Point();
-        point2 = new Point();
-        point3 = new Point();
-        height = getHeight();
-        width = getWidth();
+    public void surfaceCreated(SurfaceHolder holder) { // FIXME: 9/17/2017
+     // put in constructor
+        if(starting == true) {
+            rand = new Random();
+            player = new Player(getWidth() / 3, 0, getHeight(), getWidth(), ground);
+            player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.run_burned), 100, 150);
+            player.standBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.stand), 100, 150);
 
+            Bitmap temporary = BitmapFactory.decodeResource(getResources(), R.drawable.good_grass);
+            Ground.grassBitmap = Util.getResizedBitmap(temporary, temporary.getWidth() / 10, temporary.getHeight() / 10);
+            player.checkBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.midflag), 100, 100);
+            mp = MediaPlayer.create(context, R.raw.theme);
+            mp.start();
+            ground.initializeDraw(getWidth(), getHeight());
+            thread.running = true;
+            thread.start();
+            cloudList = new ArrayList<Cloud>();
+            point1 = new Point();
+            point2 = new Point();
+            point3 = new Point();
+            height = getHeight();
+            width = getWidth();
+            starting = false;
+        }
     }
     @Override
     protected void onDraw(Canvas canvas) {
-        this.canvas = canvas;
-        paint = new Paint();
-        paint.setColor(Color.GRAY);
-        int times = 0;
-        frames++;
-        canvas.drawColor(Color.rgb(128, 191, 255));
-        for(int i = 0; i < cloudList.size(); i++) {
-            cloudList.get(i).draw(canvas);
+        if(canvas != null) {
+            this.canvas = canvas;
+            paint = new Paint();
+            paint.setColor(Color.GRAY);
+            int times = 0;
+            frames++;
+            canvas.drawColor(Color.rgb(128, 191, 255));
+            for (int i = 0; i < cloudList.size(); i++) {
+                cloudList.get(i).draw(canvas);
+            }
+            ground.draw(canvas, player);
+
+            this.buildDrawingCache();
+
+            player.draw(canvas, ground);
+            if (player.mapX + 10000 > ground.generatedDistance) {
+                ground.generateTerrain(getWidth(), getHeight(), player, canvas);
+            }
+            randomDraw = rand.nextInt(1000);
+            if (randomDraw > 997) {
+                cloudList.add(new Cloud(Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.cloud1), rand.nextInt(300) + 300, rand.nextInt(100) + 100)));
+
+            }
+
+            if (times < 1) {
+                Cloud.canvas = canvas;
+            }
+            times++;
+            canvas.drawRect(canvas.getWidth() - 80, 50, canvas.getWidth() - 50, 150, paint);
+            canvas.drawRect(canvas.getWidth() - 140, 50, canvas.getWidth() - 110, 150, paint);
+            if (pause == 1) {
+                Util.drawTriangle(canvas.getWidth() / 3, canvas.getHeight() / 1000 * 115, canvas.getWidth() / 3 * 2, canvas.getHeight() / 2, canvas.getWidth() / 3, canvas.getHeight() / 1000 * 885, canvas);
+            }
+
+            player.drawCheckpoint(canvas);
         }
-        ground.draw(canvas, player);
-
-        this.buildDrawingCache();
-
-        player.draw(canvas, ground);
-        if(player.mapX+10000 > ground.generatedDistance) {
-            ground.generateTerrain(getWidth(), getHeight(), player, canvas);
-        }
-        randomDraw = rand.nextInt(1000);
-        if(randomDraw > 997) {
-            cloudList.add(new Cloud(Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.cloud1),rand.nextInt(300) + 300,rand.nextInt(100) + 100)));
-
-        }
-
-        if(times<1) {
-            Cloud.canvas = canvas;
-        }
-        times++;
-        canvas.drawRect(canvas.getWidth() - 80, 50, canvas.getWidth() - 50, 150, paint);
-        canvas.drawRect(canvas.getWidth() - 140, 50, canvas.getWidth() - 110, 150, paint);
-     if(pause == 1) {
-         Util.drawTriangle(canvas.getWidth() / 3, canvas.getHeight() / 1000 * 115, canvas.getWidth() / 3 * 2, canvas.getHeight() / 2, canvas.getWidth() / 3, canvas.getHeight() / 1000 * 885, canvas);
-         }
-
-         player.drawCheckpoint(canvas);
      }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public boolean onTouchEvent(MotionEvent event){
 
-        switch (event.getAction()){
-            case MotionEvent.ACTION_DOWN:
-                touchDown(event);
-                break;
-            case MotionEvent.ACTION_POINTER_DOWN:
-                touchDown(event);
-                break;
-            case MotionEvent.ACTION_MOVE:
-                touchMove(event);
-                break;
-            case MotionEvent.ACTION_UP:
-                touchUp(event);
-                break;
-            case MotionEvent.ACTION_POINTER_UP:
-                touchUp(event);
-                break;
-            case MotionEvent.ACTION_CANCEL:
-                touchUp(event);
-                break;
-            default:
-        }
+            switch (event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    touchDown(event);
+                    break;
+                case MotionEvent.ACTION_POINTER_DOWN:
+                    touchDown(event);
+                    break;
+                case MotionEvent.ACTION_MOVE:
+                    touchMove(event);
+                    break;
+                case MotionEvent.ACTION_UP:
+                    touchUp(event);
+                    break;
+                case MotionEvent.ACTION_POINTER_UP:
+                    touchUp(event);
+                    break;
+                case MotionEvent.ACTION_CANCEL:
+                    touchUp(event);
+                    break;
+                default:
+            }
         return true;
+
     }
 
     void touchDown(MotionEvent event) {
@@ -159,6 +169,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             }
         }
         else {
+
             if(Util.detectHitbox(point1, point2, point3, new Point((int)event.getX(), (int)event.getY()))) {
                 thread.running = true;
                 pause = 0;

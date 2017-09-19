@@ -153,11 +153,11 @@ public class Player {
         ticker++;
         this.y = this.y + this.getYSpeed();
         if(this.y > canvas.getHeight()) {
-        this.mapX = currentCheckPoint;
+        this.mapX = currentCheckPoint - x;
             this.y = 0;
         }
         for(int i = 0; i < checkPoints.size(); i++) {
-            if(this.mapX > checkPoints.get(i) && this.mapX > currentCheckPoint) {
+            if(this.mapX + x > checkPoints.get(i) && this.mapX + x > currentCheckPoint) {
                 currentCheckPoint = checkPoints.get(i);
             }
         }
@@ -179,7 +179,9 @@ public class Player {
                 }
             }
         }
-
+if(ground.oceanTrue == 1) {
+    y += 5;
+}
     }
 
     public int getWidth() {

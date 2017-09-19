@@ -53,39 +53,28 @@ public class Util {
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
 
-    public static boolean detectHitbox(Point a, Point b, Point c, Point mouse) { //// FIXME: 8/28/2017
-       int slope1 = (a.y - b.y)/(a.x - b.x);
-        int slope2 = (b.y - c.y)/(b.x - c.x);
-        int slope3 = (c.y - a.y)/(c.x - a.x);
-        int intercept1 = a.y - slope1 * a.x;
-        int intercept2 = b.y - slope2 * b.x;
-        int intercept3 = c.y - slope3 * c.x;
+    public static boolean detectHitbox(Point a, Point b, Point c, Point mouse) {
+            double slope1 = ((double)a.y - (double)b.y) / ((double)a.x - (double)b.x);
+            double slope2 = ((double)b.y - (double)c.y) / ((double)b.x - (double)c.x);
+            double slope3 = ((double)c.y - (double)a.y) / ((double)c.x - (double)a.x);
+            double intercept1 = a.y - slope1 * a.x;
+            double intercept2 = b.y - slope2 * b.x;
+            double intercept3 = c.y - slope3 * c.x;
+        if(mouse.y < mouse.x * slope1 + intercept1 && c.y < c.x * slope1 + intercept1 || mouse.y > mouse.x * slope1 + intercept1 && c.y > c.x * slope1 + intercept1) {
 
-        for(int i = 0; i < 9999; i++) {
-            if((mouse.y > i * slope1 + intercept1 && b.y > i * slope1 + intercept1) || (mouse.y < i * slope1 + intercept1 && b.y < i * slope1 + intercept1)) {
-
-            }
-            else {
-                return false;
-            }
         }
-        for(int i = 0; i < 9999; i++) {
-            if((mouse.y > i * slope2 + intercept2 && c.y > i * slope2 + intercept2) || (mouse.y < i * slope2 + intercept2 && c.y < i * slope2 + intercept2)) {
+        else {return false;}
 
-            }
-            else {
-                return false;
-            }
+        if(mouse.y < mouse.x * slope2 + intercept2 && a.y < a.x * slope2 + intercept2 || mouse.y > mouse.x * slope2 + intercept2 && a.y > a.x * slope2 + intercept2) {
+
         }
-        for(int i = 0; i < 9999; i++) {
-            if((mouse.y > i * slope3 + intercept3 && a.y > i * slope3 + intercept3) || (mouse.y < i * slope3 + intercept3 && a.y < i * slope3 + intercept3)) {
+        else {return false;}
 
-            }
-            else {
-                return false;
-            }
+        if(mouse.y < mouse.x * slope3 + intercept3 && b.y < b.x * slope3 + intercept3 || mouse.y > mouse.x * slope3 + intercept3 && b.y > b.x * slope3 + intercept3) {
+
         }
-        return true;
-    }
+        else {return false;}
 
+            return true;
+        }
 }

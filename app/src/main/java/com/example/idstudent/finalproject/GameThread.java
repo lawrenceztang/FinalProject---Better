@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.view.SurfaceHolder;
 
 public class GameThread extends Thread{
+    int game = 1;
     public boolean running = true;
     GameView gameView;
     SurfaceHolder surfaceHolder;
@@ -21,23 +22,24 @@ public class GameThread extends Thread{
     @SuppressLint("WrongCall")
     public void run() {
         Canvas canvas;
-        while (running) {
-            canvas = null;
-            try {
-                canvas = this.surfaceHolder.lockCanvas();
+        while(game == 1) {
+            while (running) {
+                canvas = null;
+                try {
+                    canvas = this.surfaceHolder.lockCanvas();
 
-                synchronized (surfaceHolder) {
-                    this.gameView.onDraw(canvas);
+                    synchronized (surfaceHolder) {
+                        this.gameView.onDraw(canvas);
+                    }
+                } finally {
+                    if (canvas != null) {
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                    }
                 }
-            }
-            finally {
-                if(canvas != null) {
-                    surfaceHolder.unlockCanvasAndPost(canvas);
+
+                if (running == false) {
+
                 }
-            }
-
-            if(running == false) {
-
             }
         }
     }
