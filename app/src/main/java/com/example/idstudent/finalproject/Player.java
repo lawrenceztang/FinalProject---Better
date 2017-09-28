@@ -36,7 +36,8 @@ public class Player {
     int currentCheckPoint;
     int swimming;
     int swimmingTick;
-
+    int previousY;
+    int oldY;
 
     public Player(int x, int y, int canvasHeight, int canvasWidth, Ground ground) {
         this.x = x;
@@ -149,7 +150,7 @@ public class Player {
         setTextSizeForWidth(scoreColor, 100, Integer.toString(score/300));
         canvas.drawText(Integer.toString(score/300), 20, 200, scoreColor);
         mapX = mapX - stopX;
-        mapX = xSpeed + mapX;
+        mapX += xSpeed;
         ticker++;
         this.y = this.y + this.getYSpeed();
         if(this.y > canvas.getHeight()) {
@@ -182,6 +183,9 @@ public class Player {
 if(ground.oceanTrue == 1) {
     y += 5;
 }
+previousY = oldY;
+oldY = y;
+
     }
 
     public int getWidth() {

@@ -23,7 +23,6 @@ public class Ground {
         public int grassNum;
         public int shapeHeight;
         public int shapeWidth;
-        Random rand = new Random();
         Paint paint;
 
         int shapeType = rand.nextInt(3);
@@ -94,11 +93,18 @@ public class Ground {
     ArrayList<Shape> shapes;
     ArrayList<OceanChunk> oceanArray;
     static int generatedDistance;
-    Random rand = new Random();
+    Random rand;
     int oceanTrue;
+    ArrayList<Platform> platforms;
+    ArrayList<Integer> randPlatforms;
+
+
     public Ground() {
         shapes =  new ArrayList<Shape>();
         oceanArray = new ArrayList<OceanChunk>();
+        platforms = new ArrayList<>();
+        randPlatforms = new ArrayList<>();
+        rand = new Random();
     }
 
     public void draw(Canvas canvas, Player player){
@@ -109,8 +115,9 @@ public class Ground {
         for (OceanChunk ocean : oceanArray) {
             ocean.draw(canvas, player.mapX);
         }
-        Paint paint = new Paint();
-        paint.setColor(Color.RED);
+        for (Platform platform : platforms) {
+            platform.draw(canvas, player);
+        }
     }
 
 
@@ -132,6 +139,11 @@ public class Ground {
             shapes.add(shape);
             lastX = shape.x+shape.shapeWidth;
         }
+
+        for(int i = 0; i < 10000; i++) {
+            randPlatforms.add(i, rand.nextInt(5000000));
+        }
+
     }
     public void generateTerrain(int width, int height, Player player, Canvas canvas) {
         if (biome == 1) {
@@ -153,12 +165,22 @@ public class Ground {
             if (rand.nextInt(10) == 1) {
                 biome = 2;
             }
-        }
+    }
         else if (biome == 2) {
             OceanChunk ocean = new OceanChunk(lastX, rand.nextInt(5000) + 2000, canvas);
             oceanArray.add(ocean);
             biome = 1;
             lastX = ocean.width + lastX;
+        }
+
+        for(int i = 0; i < randPlatforms.size(); i++) {
+            if(generatedDistance > randPlatforms.get(i)) {
+            if(checkPlatformAvailable(randPlatforms.get(i), 100)) {
+                Platform platform = new Platform(randPlatforms.get(i), 500, 100);
+                platforms.add(platform);
+            }
+            randPlatforms.remove(i);
+            }
         }
     }
 
@@ -177,43 +199,58 @@ public class Ground {
         return result;
     }
     public int checkCollisionY(Player player, Canvas canvas) {
-         oceanTrue = 0;
+        oceanTrue = 0;
         int result = 0;
 
-        for(int d = 0; d < oceanArray.size(); d++) {
-            if(player.x > oceanArray.get(d).lastX - player.mapX && player.x < oceanArray.get(d).lastX + oceanArray.get(d).width - player.mapX) {
+        for (int d = 0; d < oceanArray.size(); d++) {
+            if (player.x > oceanArray.get(d).lastX - player.mapX && player.x < oceanArray.get(d).lastX + oceanArray.get(d).width - player.mapX) {
                 oceanTrue = 1;
             }
         }
 
-if(oceanTrue == 0) {
-    if (player.xSpeed >= 0) {
-        for (int i = shapes.size() - 1; i >= 0; i--) {
-            result = shapes.get(i).checkCollisionY(player, canvas);
-            if (result > 0) {
-                player.canJump = 1;
-                return result;
+        for(Platform platform:platforms) {
+            platform.checkCollision(player, canvas);
+        }
 
+        if (oceanTrue == 0) {
+            if (player.xSpeed >= 0) {
+                for (int i = shapes.size() - 1; i >= 0; i--) {
+                    result = shapes.get(i).checkCollisionY(player, canvas);
+                    if (result > 0) {
+                        player.canJump = 1;
+                        return result;
+
+                    } else {
+
+                    }
+                }
             } else {
+                for (int i = 0; i < shapes.size(); i++) {
+                    result = shapes.get(i).checkCollisionY(player, canvas);
+                    if (result != 0) {
 
+                        return result;
+
+                    }
+                }
             }
+            return result;
+        } else {
+            result = player.y + 1;
         }
-    } else {
-        for (int i = 0; i < shapes.size(); i++) {
-            result = shapes.get(i).checkCollisionY(player, canvas);
-            if (result != 0) {
-
-                return result;
-
-            }
-        }
+        return result;
     }
-    return result;
-}
-else {
-    result = player.y + 1;
-}
-return  result;
+        public boolean checkPlatformAvailable(int platformX, int width) {
+            boolean yes = true;
+            if(platforms.size() > 0) {
+                for (int i = 0; i < platforms.size(); i++) {
+                    if ((platformX < platforms.get(i).x && platforms.get(i).x < platformX + width) || (platformX < platforms.get(i).y && platforms.get(i).y < platformX + width)) {
+                        return false;
+                    }
+                }
+            }
+        return true;
+
     }
 
     public class OceanChunk {

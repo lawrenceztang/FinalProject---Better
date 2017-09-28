@@ -29,7 +29,9 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     int randomDraw;
     long aFrame;
     float downY;
+    float downY2;
     long frames;
+    long aFrame2;
     Paint paint;
     int pause;
     ArrayList<Cloud> cloudList;
@@ -39,6 +41,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     int height;
     int width;
     boolean starting = true;
+//// TODO: 9/26/2017 get out of constructor, GameThread too
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -61,9 +64,8 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     }
 
     @Override
-    public void surfaceCreated(SurfaceHolder holder) { // FIXME: 9/17/2017
-     // put in constructor
-        if(starting == true) {
+    public void surfaceCreated(SurfaceHolder holder) {
+        if (starting == true) {
             rand = new Random();
             player = new Player(getWidth() / 3, 0, getHeight(), getWidth(), ground);
             player.runBitmap = Util.getResizedBitmap(BitmapFactory.decodeResource(getResources(), R.drawable.run_burned), 100, 150);
@@ -86,9 +88,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             starting = false;
         }
     }
+
     @Override
     protected void onDraw(Canvas canvas) {
-        if(canvas != null) {
+        if (canvas != null) {
             this.canvas = canvas;
             paint = new Paint();
             paint.setColor(Color.GRAY);
@@ -124,89 +127,93 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
             player.drawCheckpoint(canvas);
         }
-     }
+    }
 
     @Override
-    public boolean onTouchEvent(MotionEvent event){
+    public boolean onTouchEvent(MotionEvent event) {
 
-            switch (event.getAction()) {
-                case MotionEvent.ACTION_DOWN:
-                    touchDown(event);
-                    break;
-                case MotionEvent.ACTION_POINTER_DOWN:
-                    touchDown(event);
-                    break;
-                case MotionEvent.ACTION_MOVE:
-                    touchMove(event);
-                    break;
-                case MotionEvent.ACTION_UP:
-                    touchUp(event);
-                    break;
-                case MotionEvent.ACTION_POINTER_UP:
-                    touchUp(event);
-                    break;
-                case MotionEvent.ACTION_CANCEL:
-                    touchUp(event);
-                    break;
-                default:
-            }
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+
+            case MotionEvent.ACTION_POINTER_DOWN:
+                downY2 = event.getY();
+                aFrame2 = frames;
+                break;
+
+            case MotionEvent.ACTION_POINTER_UP:
+                float asd = event.getY();
+                if (
+                        downY2 - event.getY() > 100 &&
+                                frames - aFrame2 < 30
+
+                        ) {
+                    if (ground.oceanTrue == 0 && player.canJump != 0) {
+                        player.jump();
+                        player.canJump = 0;
+                    }
+                    if (ground.oceanTrue == 1 && player.y + player.getHeight() > ground.oceanArray.get(0).seaLevel) {
+                        player.swimUp();
+                    }
+                }
+                break;
+
+            case MotionEvent.ACTION_DOWN:
+                if (thread.running == true) {
+                    downY = event.getY();
+                    aFrame = frames;
+
+                    if (event.getX() > getWidth() / 9 * 5) {
+                        player.setRun(10);
+                    } else if (event.getX() < getWidth() / 9 * 4) {
+                        player.setRun(-10);
+                    }
+                    if (event.getY() < 150 && event.getX() > canvas.getWidth() - 140) {
+                        stop();
+                    }
+                } else {
+
+                    if (Util.detectHitbox(point1, point2, point3, new Point((int) event.getX(), (int) event.getY()))) {
+                        thread.running = true;
+                        pause = 0;
+                    }
+                }
+            break;
+
+            case MotionEvent.ACTION_UP:
+                if (thread.running == true) {
+                    player.setRun(0);
+                    if (
+                            downY - event.getY() > 100 &&
+                                    frames - aFrame < 30
+
+                            ) {
+                        if (ground.oceanTrue == 0 && player.canJump != 0) {
+                            player.jump();
+                            player.canJump = 0;
+                        }
+                        if (ground.oceanTrue == 1 && player.y + player.getHeight() > ground.oceanArray.get(0).seaLevel) {
+                            player.swimUp();
+                        }
+                    }
+                    player.xSpeed = 0;
+                }
+            break;
+
+            default:
+        }
+
+
         return true;
 
     }
 
-    void touchDown(MotionEvent event) {
-        if(thread.running == true) {
-            downY = event.getY();
-            aFrame = frames;
+    public void stop() {
+        thread.running = false;
 
-            if (event.getX() > getWidth() / 9 * 5) {
-                player.setRun(10);
-            } else if (event.getX() < getWidth() / 9 * 4) {
-                player.setRun(-10);
-            }
-            if (event.getY() < 150 && event.getX() > canvas.getWidth() - 140) {
-                stop();
-            }
-        }
-        else {
-
-            if(Util.detectHitbox(point1, point2, point3, new Point((int)event.getX(), (int)event.getY()))) {
-                thread.running = true;
-                pause = 0;
-            }
-        }
+        point1.set(width / 3, height / 1000 * 115);
+        point2.set(width / 3 * 2, height / 2);
+        point3.set(width / 3 - 1, height / 1000 * 885);
+        Util.drawTriangle(point1.x, point1.y, point2.x, point2.y, point3.x, point3.y, canvas);
+        pause = 1;
     }
-    void touchMove(MotionEvent event) {
-
-    }
-    void touchUp(MotionEvent event) {
-        if(thread.running == true) {
-            player.setRun(0);
-            if (
-                    downY - event.getY() > 100 &&
-                            frames - aFrame < 30
-
-                    ) {
-                if(ground.oceanTrue == 0 && player.canJump != 0 ) {
-                    player.jump();
-                    player.canJump = 0;
-                }
-              if(ground.oceanTrue == 1 &&  player.y + player.getHeight() > ground.oceanArray.get(0).seaLevel) {
-                player.swimUp();
-              }
-            }
-            player.xSpeed = 0;
-        }
-    }
-
-public void stop() {
-    thread.running = false;
-
-    point1.set(width/3, height/1000*115);
-    point2.set(width/3*2, height/2);
-    point3.set(width/3-1, height/1000*885);
-    Util.drawTriangle(point1.x, point1.y, point2.x, point2.y, point3.x, point3.y, canvas);
-    pause = 1;
-}
 }
 
