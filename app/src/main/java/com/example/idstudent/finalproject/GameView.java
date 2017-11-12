@@ -41,7 +41,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
     int height;
     int width;
     boolean starting = true;
-//// TODO: 9/26/2017 get out of constructor, GameThread too
+
     public GameView(Context context) {
         super(context);
         getHolder().addCallback(this);
@@ -86,6 +86,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
             height = getHeight();
             width = getWidth();
             starting = false;
+        }
+        else {
+            getHolder().addCallback(this);
+            setFocusable(true);
+            setDrawingCacheEnabled(true);
+            thread = new GameThread(getHolder(), this);
         }
     }
 
@@ -214,6 +220,10 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
         point3.set(width / 3 - 1, height / 1000 * 885);
         Util.drawTriangle(point1.x, point1.y, point2.x, point2.y, point3.x, point3.y, canvas);
         pause = 1;
+    }
+
+    public void resume(Context context) {
+
     }
 }
 

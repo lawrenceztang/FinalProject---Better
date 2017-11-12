@@ -18,7 +18,7 @@ GameView view;
         super.onCreate(savedInstanceState);
         SharedPreferences  mPrefs = getPreferences(MODE_PRIVATE);
         Gson gson = new Gson();
-        if(mPrefs.getString("Objects", null) != null) {
+        if(mPrefs.getString("Objects", null) == null) {
                 GameView view = new GameView(this);
                 setContentView(view);
         }
@@ -36,9 +36,15 @@ GameView view;
     protected  void onRestart () {
         super.onRestart();
     }
+
     protected void onPause() {
         super.onPause();
-
+        SharedPreferences  mPrefs = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor prefsEditor = mPrefs.edit();
+        Gson gson = new Gson();
+        String json = gson.toJson(view);
+        prefsEditor.putString("MyObject", json);
+        prefsEditor.commit();
 
     }
     protected void onStop() {

@@ -1,6 +1,7 @@
 package com.example.idstudent.finalproject;
 
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
@@ -9,6 +10,14 @@ import android.graphics.Path;
 import android.graphics.Point;
 
 public class Util {
+
+    public int getWidthUnit() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels / 100;
+    }
+
+    public int getHeightUnit() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 
     public static Bitmap getResizedBitmap(Bitmap bm, int newWidth, int newHeight) {
         int width = bm.getWidth();
@@ -77,4 +86,19 @@ public class Util {
 
             return true;
         }
+
+    public static int printDigits(int num) {
+        if(num / 10 > 0) {
+            printDigits(num / 10);
+        }
+       return num % 10;
+    }
+
+    public static int concatenateDigits(int... digits) {
+        StringBuilder sb = new StringBuilder(digits.length);
+        for (int digit : digits) {
+            sb.append(digit);
+        }
+        return Integer.parseInt(sb.toString());
+    }
 }

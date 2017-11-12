@@ -36,8 +36,12 @@ public class Player {
     int currentCheckPoint;
     int swimming;
     int swimmingTick;
-    int previousY;
     int oldY;
+    int oldMapX;
+    int olderY;
+    int olderMapX;
+    int stopX;
+    int stopY;
 
     public Player(int x, int y, int canvasHeight, int canvasWidth, Ground ground) {
         this.x = x;
@@ -121,8 +125,9 @@ public class Player {
             canvas.drawBitmap(standBitmap, x, y, null);
         }
 
-        int stopX = ground.checkCollisionX(this, canvas);
-        int stopY = ground.checkCollisionY(this, canvas);
+        stopX = ground.checkCollisionX(this, canvas);
+        stopY = ground.checkCollisionY(this, canvas);
+
         if(stopY > 0) {
             this.y = stopY;
             ySpeed = 0;
@@ -183,8 +188,11 @@ public class Player {
 if(ground.oceanTrue == 1) {
     y += 5;
 }
-previousY = oldY;
-oldY = y;
+
+oldY = olderY;
+        oldMapX = olderMapX;
+        olderMapX = mapX;
+        olderY = y;
 
     }
 

@@ -7,8 +7,10 @@ import android.graphics.Color;
 import android.graphics.Paint;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
+import static android.R.attr.shape;
 import static android.R.attr.type;
 
 public class Ground {
@@ -23,6 +25,7 @@ public class Ground {
         public int grassNum;
         public int shapeHeight;
         public int shapeWidth;
+        boolean on;
         Paint paint;
 
         int shapeType = rand.nextInt(3);
@@ -52,7 +55,7 @@ public class Ground {
            }
 
         }
-        public int checkCollisionX(Player player, Canvas canvas) {
+        public int checkCollisionX(Player player) {
             if (
                     (shapeHeight < player.y + player.getHeight() - 11) &&
                             (player.x + player.getWidth() > x - player.mapX) &&
@@ -66,28 +69,26 @@ public class Ground {
             }
             return 0;
         }
-        public int checkCollisionY(Player player, Canvas canvas) {
+        public int checkCollisionY(Player player) {
 
-          if(
-                    (x - player.mapX              < player.x + player.getWidth()  || (x - player.mapX              < player.x )) &&
-                    (x - player.mapX + shapeWidth > player.x + player.getWidth() || (x - player.mapX + shapeWidth > player.x ))
-                    ) {
+          if(x - player.mapX < player.x + player.getWidth() && x - player.mapX + shapeWidth > player.x) {
 
-                if(shapeHeight < player.y + player.getHeight() && shapeHeight > player.y + player.getWidth()/2) {
+                if(player.y + player.getHeight() > this.shapeHeight && player.oldY + player.getHeight() < this.shapeHeight && player.x + player.getWidth() > this.x - player.oldMapX && player.x < this.x + this.shapeWidth - player.oldMapX) {
                     fall = false;
-
-                    return shapeHeight- player.getHeight() + 10;
-
+                    on = true;
+                    return shapeHeight - player.getHeight() + 10;
                 }
-                fall = true;
-                return 0;
             }
+          else if(on == true){
+              on = false;
+              fall = true;
+          }
 
             return 0;
         }
     }
     int biome = 1;
-    public boolean fall;
+    public boolean fall = true;
     static Bitmap grassBitmap;
     static int lastX;
     ArrayList<Shape> shapes;
@@ -176,7 +177,14 @@ public class Ground {
         for(int i = 0; i < randPlatforms.size(); i++) {
             if(generatedDistance > randPlatforms.get(i)) {
             if(checkPlatformAvailable(randPlatforms.get(i), 100)) {
-                Platform platform = new Platform(randPlatforms.get(i), 500, 100);
+                Platform platform = new Platform(randPlatforms.get(i), canvas.getHeight(), 100);
+                for(int counter = 0; counter < shapes.size(); counter++) {
+                    if(shapes.get(counter).x < platform.x && shapes.get(counter).x + shapes.get(counter).shapeWidth > platform.x) {
+                        if(platform.y > shapes.get(counter).shapeHeight) {
+                            platform.y = shapes.get(counter).shapeHeight - 200 - rand.nextInt(100);
+                        }
+                    }
+                }
                 platforms.add(platform);
             }
             randPlatforms.remove(i);
@@ -189,7 +197,7 @@ public class Ground {
     public int checkCollisionX(Player player, Canvas canvas) {
         int result = 0;
         for (int i = shapes.size() - 1; i >= 0; i--) {
-            result = shapes.get(i).checkCollisionX(player, canvas);
+            result = shapes.get(i).checkCollisionX(player);
             if (result != 0) {
 
                 return result;
@@ -199,6 +207,7 @@ public class Ground {
         return result;
     }
     public int checkCollisionY(Player player, Canvas canvas) {
+
         oceanTrue = 0;
         int result = 0;
 
@@ -209,13 +218,13 @@ public class Ground {
         }
 
         for(Platform platform:platforms) {
-            platform.checkCollision(player, canvas);
+            platform.checkCollision(player, this);
         }
 
         if (oceanTrue == 0) {
             if (player.xSpeed >= 0) {
                 for (int i = shapes.size() - 1; i >= 0; i--) {
-                    result = shapes.get(i).checkCollisionY(player, canvas);
+                    result = shapes.get(i).checkCollisionY(player);
                     if (result > 0) {
                         player.canJump = 1;
                         return result;
@@ -226,7 +235,7 @@ public class Ground {
                 }
             } else {
                 for (int i = 0; i < shapes.size(); i++) {
-                    result = shapes.get(i).checkCollisionY(player, canvas);
+                    result = shapes.get(i).checkCollisionY(player);
                     if (result != 0) {
 
                         return result;

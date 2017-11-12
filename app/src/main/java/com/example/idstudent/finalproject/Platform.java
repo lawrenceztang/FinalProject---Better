@@ -14,7 +14,9 @@ public class Platform {
     int y;
     int width;
     int height;
+    boolean on;
 Paint paint;
+
     public Platform(int x, int y, int width) {
         this.x = x;
         this.y = y;
@@ -22,11 +24,19 @@ Paint paint;
         paint = new Paint();
         paint.setColor(Color.BLACK);
     }
-        public void checkCollision(Player player, Canvas canvas) {
-        if(player.mapX > this.x && player.mapX < this.x + this.width) {
-            if(player.y < this.y && player.ySpeed < 0) {
-                player.y += 10;
+        public void checkCollision(Player player, Ground ground) {
+        if(player.x + player.getWidth() > this.x - player.mapX && player.x + player.getWidth() < this.x + this.width - player.mapX) {
+            if(player.y + player.getHeight() > this.y && player.oldY + player.getHeight() < this.y && player.x + player.getWidth() > this.x - player.oldMapX && player.x < this.x + this.width - player.oldMapX) {
+                player.y = this.y - player.getHeight() + 10;
+                player.ySpeed = 0;
+                player.canJump = 1;
+                ground.fall = false;
+                on = true;
             }
+        }
+        else if(on == true){
+            on = false;
+            ground.fall = true;
         }
 
     }
