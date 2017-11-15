@@ -9,7 +9,7 @@ import android.graphics.Paint;
  */
 
 public class Platform {
-
+    boolean platformFall = true;
     int x;
     int y;
     int width;
@@ -24,14 +24,17 @@ Paint paint;
         paint = new Paint();
         paint.setColor(Color.BLACK);
     }
-        public void checkCollision(Player player, Ground ground) {
-        if(player.x + player.getWidth() > this.x - player.mapX && player.x + player.getWidth() < this.x + this.width - player.mapX) {
-            if(player.y + player.getHeight() > this.y && player.oldY + player.getHeight() < this.y && player.x + player.getWidth() > this.x - player.oldMapX && player.x < this.x + this.width - player.oldMapX) {
-                player.y = this.y - player.getHeight() + 10;
+        public int checkCollision(Player player, Ground ground) {
+        if(player.x + player.getWidth() > this.x - player.mapX && player.x < this.x + this.width - player.mapX) {
+            if(player.y + player.getHeight() > this.y && player.oldY + player.getHeight() < this.y) {
+                platformFall = false;
                 player.ySpeed = 0;
-                player.canJump = 1;
+                player.canJump = 2;
                 ground.fall = false;
                 on = true;
+                return this.y - player.getHeight();
+            }
+            else if(player.y < this.y - player.getHeight()) {
             }
         }
         else if(on == true){
@@ -39,11 +42,12 @@ Paint paint;
             ground.fall = true;
         }
 
+return 0;
     }
 
     public void draw(Canvas canvas, Player player) {
         if(x - player.mapX + width > 0 && x - player.mapX < canvas.getWidth()) {
-            canvas.drawRect(x - player.mapX, y, x + width - player.mapX, y - 10, paint);
+            canvas.drawRect(x - player.mapX, y, x + width - player.mapX, y - 15, paint);
         }
     }
     }

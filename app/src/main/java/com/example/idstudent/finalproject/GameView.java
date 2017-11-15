@@ -140,12 +140,12 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
 
         switch (event.getAction() & MotionEvent.ACTION_MASK) {
 
-            case MotionEvent.ACTION_POINTER_DOWN:
+            case MotionEvent.ACTION_POINTER_DOWN: //2nd finger
                 downY2 = event.getY();
                 aFrame2 = frames;
                 break;
 
-            case MotionEvent.ACTION_POINTER_UP:
+            case MotionEvent.ACTION_POINTER_UP: //2nd finger
                 float asd = event.getY();
                 if (
                         downY2 - event.getY() > 100 &&
@@ -154,7 +154,6 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                         ) {
                     if (ground.oceanTrue == 0 && player.canJump != 0) {
                         player.jump();
-                        player.canJump = 0;
                     }
                     if (ground.oceanTrue == 1 && player.y + player.getHeight() > ground.oceanArray.get(0).seaLevel) {
                         player.swimUp();
@@ -194,7 +193,7 @@ public class GameView extends SurfaceView implements SurfaceHolder.Callback {
                             ) {
                         if (ground.oceanTrue == 0 && player.canJump != 0) {
                             player.jump();
-                            player.canJump = 0;
+                            ground.fall = true;
                         }
                         if (ground.oceanTrue == 1 && player.y + player.getHeight() > ground.oceanArray.get(0).seaLevel) {
                             player.swimUp();

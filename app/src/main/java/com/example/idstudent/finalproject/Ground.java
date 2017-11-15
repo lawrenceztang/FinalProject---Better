@@ -27,6 +27,7 @@ public class Ground {
         public int shapeWidth;
         boolean on;
         Paint paint;
+        boolean shapeFall = true;
 
         int shapeType = rand.nextInt(3);
         Shape() {
@@ -73,16 +74,21 @@ public class Ground {
 
           if(x - player.mapX < player.x + player.getWidth() && x - player.mapX + shapeWidth > player.x) {
 
-                if(player.y + player.getHeight() > this.shapeHeight && player.oldY + player.getHeight() < this.shapeHeight && player.x + player.getWidth() > this.x - player.oldMapX && player.x < this.x + this.shapeWidth - player.oldMapX) {
+                if(player.y + player.getHeight() > this.shapeHeight && player.oldY + player.getHeight() < this.shapeHeight) {
                     fall = false;
                     on = true;
-                    return shapeHeight - player.getHeight() + 10;
+                    player.ySpeed = 0;
+                    return shapeHeight - player.getHeight();
+                }
+                else if(player.getHeight() < this.shapeHeight - player.getHeight()){
+
                 }
             }
           else if(on == true){
               on = false;
               fall = true;
           }
+
 
             return 0;
         }
@@ -176,12 +182,12 @@ public class Ground {
 
         for(int i = 0; i < randPlatforms.size(); i++) {
             if(generatedDistance > randPlatforms.get(i)) {
-            if(checkPlatformAvailable(randPlatforms.get(i), 100)) {
-                Platform platform = new Platform(randPlatforms.get(i), canvas.getHeight(), 100);
+            if(checkPlatformAvailable(randPlatforms.get(i), 150)) {
+                Platform platform = new Platform(randPlatforms.get(i), canvas.getHeight(), 150);
                 for(int counter = 0; counter < shapes.size(); counter++) {
-                    if(shapes.get(counter).x < platform.x && shapes.get(counter).x + shapes.get(counter).shapeWidth > platform.x) {
+                    if(shapes.get(counter).x < platform.x + platform.width && shapes.get(counter).x + shapes.get(counter).shapeWidth > platform.x) {
                         if(platform.y > shapes.get(counter).shapeHeight) {
-                            platform.y = shapes.get(counter).shapeHeight - 200 - rand.nextInt(100);
+                            platform.y = shapes.get(counter).shapeHeight - 100 - rand.nextInt(100);
                         }
                     }
                 }
@@ -207,7 +213,6 @@ public class Ground {
         return result;
     }
     public int checkCollisionY(Player player, Canvas canvas) {
-
         oceanTrue = 0;
         int result = 0;
 
@@ -226,7 +231,6 @@ public class Ground {
                 for (int i = shapes.size() - 1; i >= 0; i--) {
                     result = shapes.get(i).checkCollisionY(player);
                     if (result > 0) {
-                        player.canJump = 1;
                         return result;
 
                     } else {

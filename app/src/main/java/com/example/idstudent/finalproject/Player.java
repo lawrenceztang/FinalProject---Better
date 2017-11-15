@@ -49,7 +49,7 @@ public class Player {
         this.canvasHeight=canvasHeight;
         this.canvasWidth=canvasWidth;
         mapX = 0;
-        ground = ground;
+        this.ground = ground;
         checkPoints = new ArrayList<Integer>();
         int addCheckpoints = 0;
         int numToAdd = 0;
@@ -65,6 +65,7 @@ public class Player {
         if (canJump > 0) {
             jumping = true;
             jumpingTicker = 0;
+            canJump --;
         }
     }
     public void swimUp() {
@@ -131,6 +132,7 @@ public class Player {
         if(stopY > 0) {
             this.y = stopY;
             ySpeed = 0;
+            canJump = 2;
         }
         else if(stopY == 0){
             if(ground.fall) {
