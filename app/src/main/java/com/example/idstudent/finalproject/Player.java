@@ -76,6 +76,7 @@ public class Player {
 
     public void draw(Canvas canvas, Ground ground) {
         Matrix m = new Matrix();
+        mapX += xSpeed;
         if(running != 0) {
             if(ground.oceanTrue == 1 &&  y + getHeight() > ground.oceanArray.get(0).seaLevel) {
                 if (ticker % 10 > 5) {
@@ -157,7 +158,6 @@ public class Player {
         setTextSizeForWidth(scoreColor, 100, Integer.toString(score/300));
         canvas.drawText(Integer.toString(score/300), 20, 200, scoreColor);
         mapX = mapX - stopX;
-        mapX += xSpeed;
         ticker++;
         this.y = this.y + this.getYSpeed();
         if(this.y > canvas.getHeight()) {
@@ -174,7 +174,7 @@ public class Player {
                 swimming = 0;
             }
             else {
-                this.y -= 5;
+                this.y -= 20;
                 swimmingTick++;
             }
         }
@@ -187,14 +187,13 @@ public class Player {
                 }
             }
         }
-if(ground.oceanTrue == 1) {
-    y += 5;
-}
+    if(ground.oceanTrue == 1) {
+        y += 5;
+    }
 
-oldY = olderY;
-        oldMapX = olderMapX;
-        olderMapX = mapX;
-        olderY = y;
+    oldY = olderY;
+    oldMapX = mapX;
+    olderY = y;
 
     }
 

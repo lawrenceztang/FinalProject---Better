@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FinalProject---Better.iml" filepath="$PROJECT_DIR$/.idea/modules/FinalProject---Better.iml" group="FinalProject---Better" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/FinalProject---Better-app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/FinalProject---Better-app.iml" group="FinalProject---Better/app" />
       <module fileurl="file://$PROJECT_DIR$/FinalProject-Best.iml" filepath="$PROJECT_DIR$/FinalProject-Best.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>

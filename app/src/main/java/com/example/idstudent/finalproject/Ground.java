@@ -57,16 +57,11 @@ public class Ground {
 
         }
         public int checkCollisionX(Player player) {
-            if (
-                    (shapeHeight < player.y + player.getHeight() - 11) &&
-                            (player.x + player.getWidth() > x - player.mapX) &&
-                            (player.x < x - player.mapX)
-
-                    ) {
-                return 10;
+            if ((shapeHeight < player.y + player.getHeight() - 11) && (player.x + player.getWidth() > x - player.mapX) && (player.x < x - player.mapX + shapeWidth) && player.x + player.getWidth() < x - player.oldMapX) {
+                player.mapX = player.oldMapX;
             }
-            if ((shapeHeight < player.y + player.getHeight() - 11) && (player.x + player.getWidth()  > x - player.mapX + shapeWidth) && (player.x < x - player.mapX + shapeWidth)) {
-               return -10;
+            if ((shapeHeight < player.y + player.getHeight() - 11) && (player.x + player.getWidth()  > x - player.mapX) && (player.x < x - player.mapX + shapeWidth) && player.x > x + shapeWidth - player.oldMapX) {
+                player.mapX = player.oldMapX;
             }
             return 0;
         }
@@ -93,6 +88,7 @@ public class Ground {
             return 0;
         }
     }
+
     int biome = 1;
     public boolean fall = true;
     static Bitmap grassBitmap;
